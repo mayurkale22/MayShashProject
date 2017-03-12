@@ -37,7 +37,7 @@ public class RunEmbedded {
     public static HttpServer startLemInJdkServer(@Nullable AbstractBinder binder, @Nullable Integer port, @Nullable Boolean withMonitor) {
 
         if (port == null) {
-            port = 8080;
+            port = 8000;
         }
 
         URI baseUri = UriBuilder.fromUri("http://localhost/").port(port).build();
