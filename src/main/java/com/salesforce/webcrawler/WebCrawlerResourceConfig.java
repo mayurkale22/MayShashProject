@@ -2,7 +2,6 @@ package com.salesforce.webcrawler;
 
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.server.ResourceConfig;
-
 import javax.inject.Singleton;
 import javax.ws.rs.ApplicationPath;
 
@@ -12,8 +11,7 @@ public class WebCrawlerResourceConfig extends ResourceConfig {
     static AbstractBinder binder = new AbstractBinder() {
         @Override
         protected void configure() {
-            //bind service impls to services
-
+            bind(LoadProperties.class).to(LoadProperties.class).in(Singleton.class);
         }
     };
 

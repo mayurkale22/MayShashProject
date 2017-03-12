@@ -1,8 +1,10 @@
+import com.salesforce.webcrawler.LoadProperties;
 import com.salesforce.webcrawler.WebCrawlerResourceConfig;
 import com.sun.net.httpserver.HttpServer;
 import org.glassfish.hk2.utilities.binding.AbstractBinder;
 import org.glassfish.jersey.jdkhttp.JdkHttpServerFactory;
 import javax.annotation.Nullable;
+import javax.inject.Singleton;
 import javax.ws.rs.core.UriBuilder;
 import java.net.URI;
 
@@ -15,7 +17,7 @@ public class RunEmbedded {
             AbstractBinder developmentBinder = new AbstractBinder() {
                 @Override
                 protected void configure() {
-
+                    bind(LoadProperties.class).to(LoadProperties.class).in(Singleton.class);
                 }
             };
 
