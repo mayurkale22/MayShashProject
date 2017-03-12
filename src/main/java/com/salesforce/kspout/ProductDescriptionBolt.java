@@ -18,8 +18,8 @@ public class ProductDescriptionBolt implements IRichBolt{
 
 	public void execute(Tuple input) {
 		String URL = input.getStringByField("URL");
-		//TODO call harshal's method to get product description from body
-		String productDescription = null;
+
+		String productDescription = WordKafkaUtil.getDescription(URL);
 		
 		String[] words = productDescription.split("\\s+");
 		for(String word: words){

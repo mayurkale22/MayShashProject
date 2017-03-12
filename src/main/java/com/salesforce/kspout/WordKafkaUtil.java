@@ -1,5 +1,6 @@
 package com.salesforce.kspout;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import org.apache.storm.Config;
@@ -14,9 +15,28 @@ import org.apache.storm.kafka.StringScheme;
 import org.apache.storm.kafka.ZkHosts;
 import org.apache.storm.spout.SchemeAsMultiScheme;
 import org.apache.storm.topology.TopologyBuilder;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class WordKafkaUtil {
-	public static void createKafkaSpout(){
+	private final static Logger LOGGER = LoggerFactory.getLogger(WordKafkaUtil.class);
+
+	public static String getDescription(String url) {
+		LOGGER.info("Web crawler request for : {}", url);
+
+		try {
+			Document doc = Jsoup.connect(url).get();
+			String description = doc.getElementById("productDescription").text();
+			LOGGER.info(description);
+			return description;
+		} catch (IOException e) {
+			LOGGER.error("Exception in getting url {}", e.getMessage());
+		}
+		return null;
+	}
+	public static void createKafkaSpout() throws InterruptedException {
 		  Config config = new Config();
 	      config.setDebug(true);
 	      config.put(Config.TOPOLOGY_MAX_SPOUT_PENDING, 1);
@@ -33,7 +53,7 @@ public class WordKafkaUtil {
 	      TopologyBuilder builder = new TopologyBuilder();
 	      builder.setSpout("kafka-spout", new KafkaSpout(kafkaSpoutConfig));
 	      builder.setBolt("url-parser", new ProductDescriptionBolt()).shuffleGrouping("kafka-spout");
-	      builder.setBolt("intersting-word", new CountBolt()).shuffleGrouping("url-parser");
+	      //builder.setBolt("intersting-word", new CountBolt()).shuffleGrouping("url-parser");
 
 	      LocalCluster cluster = new LocalCluster();
 	      cluster.submitTopology("KafkaStormSample", config, builder.createTopology());
