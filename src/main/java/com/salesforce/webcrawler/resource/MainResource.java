@@ -1,9 +1,12 @@
 package com.salesforce.webcrawler.resource;
 
 import com.google.common.base.Strings;
+import com.salesforce.kspout.WordKafkaUtil;
 import com.salesforce.webcrawler.LoadProperties;
+
 import orestes.bloomfilter.BloomFilter;
 import orestes.bloomfilter.FilterBuilder;
+
 import org.apache.commons.validator.routines.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +16,9 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import kafka.javaapi.producer.Producer;
+import kafka.producer.KeyedMessage;
+
 
 @Path("/")
 @SuppressWarnings("PMD.DuplicateImports")
@@ -21,6 +27,7 @@ public class MainResource {
     private static final String URL_BLOOM_FILTER = "urlbloomfilter";
 
     @Inject LoadProperties properties;
+    Producer producer = WordKafkaUtil.createProducer();
 
     @GET
     @Produces(MediaType.APPLICATION_JSON)
@@ -50,6 +57,7 @@ public class MainResource {
             }
 
             urlFilter.add(url);
+            producer.send(new KeyedMessage<String, String>(WordKafkaUtil.topic, url));
             return Response.status(200).entity(url).build();
         } else {
             return Response.status(400).entity("You fool! Please add url param.").build();

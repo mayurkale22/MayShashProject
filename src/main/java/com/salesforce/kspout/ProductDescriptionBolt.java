@@ -6,6 +6,7 @@ import org.apache.storm.task.OutputCollector;
 import org.apache.storm.task.TopologyContext;
 import org.apache.storm.topology.IRichBolt;
 import org.apache.storm.topology.OutputFieldsDeclarer;
+import org.apache.storm.tuple.Fields;
 import org.apache.storm.tuple.Tuple;
 import org.apache.storm.tuple.Values;
 
@@ -24,7 +25,7 @@ public class ProductDescriptionBolt implements IRichBolt{
 		String[] words = productDescription.split("\\s+");
 		for(String word: words){
 			//TODO ignore stop words
-			_collector.emit(new Values(word));
+			_collector.emit(new Values(word, 1));
 		}
 		
 		_collector.ack(input);
@@ -36,8 +37,7 @@ public class ProductDescriptionBolt implements IRichBolt{
 	}
 
 	public void declareOutputFields(OutputFieldsDeclarer declarer) {
-		// TODO Auto-generated method stub
-		
+		declarer.declare(new Fields("word"));
 	}
 
 	public Map<String, Object> getComponentConfiguration() {
